@@ -1,0 +1,159 @@
+{
+  "nft": {
+    "owner": "5HNoBuCV7WUS8tBYodo5bnwVKjcsx7ZNbtYci2xjdk2GrvDV",
+    "tokenId": 1,
+    "collectionId": 3604,
+    "attributes": {},
+    "image": {
+      "url": "https://gateway.pinata.cloud/ipfs/QmfWKy52e8pyH1jrLu4hwyAG6iwk6hcYa37DoVe8rdxXwV",
+      "fullUrl": "https://gateway.pinata.cloud/ipfs/QmfWKy52e8pyH1jrLu4hwyAG6iwk6hcYa37DoVe8rdxXwV"
+    },
+    "properties": [
+      { "key": "schemaName", "value": "unique", "valueHex": "0x756e69717565" },
+      { "key": "schemaVersion", "value": "2.0.0", "valueHex": "0x322e302e30" },
+      {
+        "key": "tokenData",
+        "value": 
+          "{\"schemaName\":\"unique\",\"schemaVersion\":\"2.0.0\",\"image\":\"https://gateway.pinata.cloud/ipfs/QmfWKy52e8pyH1jrLu4hwyAG6iwk6hcYa37DoVe8rdxXwV\",\"attributes\":[{\"trait_type\":\"Nickname\",\"value\":\"Dukke\"},{\"trait_type\":\"Victories\",\"value\":0},{\"trait_type\":\"Defeats\",\"value\":1}]}",
+        "valueHex": 
+          "0x7b22736368656d614e616d65223a22756e69717565222c22736368656d6156657273696f6e223a22322e302e30222c22696d616765223a2268747470733a2f2f676174657761792e70696e6174612e636c6f75642f697066732f516d66574b7935326538707948316a724c753468777941473669776b36686359613337446f566538726478587756222c2261747472696275746573223a5b7b2274726169745f74797065223a224e69636b6e616d65222c2276616c7565223a2244756b6b65227d2c7b2274726169745f74797065223a22566963746f72696573222c2276616c7565223a307d2c7b2274726169745f74797065223a2244656665617473222c2276616c7565223a317d5d7d"
+      }
+    ],
+    "collection": {
+      "mode": "NFT",
+      "decimals": 0,
+      "name": "Racing Dreams",
+      "description": "Racing simulation demo",
+      "tokenPrefix": "CAR",
+      "sponsorship": null,
+      "limits": {
+        "accountTokenOwnershipLimit": null,
+        "sponsoredDataSize": null,
+        "sponsoredDataRateLimit": null,
+        "tokenLimit": null,
+        "sponsorTransferTimeout": null,
+        "sponsorApproveTimeout": null,
+        "ownerCanTransfer": null,
+        "ownerCanDestroy": null,
+        "transfersEnabled": null
+      },
+      "readOnly": false,
+      "permissions": {
+        "access": "Normal",
+        "mintMode": false,
+        "nesting": { "tokenOwner": false, "collectionAdmin": true, "restricted": null }
+      },
+      "id": 3604,
+      "owner": "5HNoBuCV7WUS8tBYodo5bnwVKjcsx7ZNbtYci2xjdk2GrvDV",
+      "properties": [
+        {
+          "key": "collectionInfo",
+          "value": 
+            "{\"schemaName\":\"unique\",\"schemaVersion\":\"2.0.0\",\"cover_image\":{\"url\":\"https://gateway.pinata.cloud/ipfs/QmeNzaLfsUUi5pGmhrASEpXF52deCDuByeKbU7SuZ9toEi\"}}",
+          "valueHex": 
+            "0x7b22736368656d614e616d65223a22756e69717565222c22736368656d6156657273696f6e223a22322e302e30222c22636f7665725f696d616765223a7b2275726c223a2268747470733a2f2f676174657761792e70696e6174612e636c6f75642f697066732f516d654e7a614c66735555693570476d6872415345705846353264654344754279654b62553753755a39746f4569227d7d"
+        },
+        {
+          "key": "schemaName",
+          "value": "\"unique\"",
+          "valueHex": "0x756e69717565"
+        },
+        {
+          "key": "schemaVersion",
+          "value": "\"1.0.0\"",
+          "valueHex": "0x322e302e30"
+        }
+      ],
+      "schema": {
+        "collectionInfo": {
+          "schemaName": "unique",
+          "schemaVersion": "2.0.0",
+          "cover_image": {
+            "url": 
+              "https://gateway.pinata.cloud/ipfs/QmeNzaLfsUUi5pGmhrASEpXF52deCDuByeKbU7SuZ9toEi"
+          }
+        },
+        "schemaName": "unique",
+        "schemaVersion": "1.0.0",
+        "coverPicture": {
+          "url": 
+            "https://gateway.pinata.cloud/ipfs/QmeNzaLfsUUi5pGmhrASEpXF52deCDuByeKbU7SuZ9toEi",
+          "fullUrl": 
+            "https://gateway.pinata.cloud/ipfs/QmeNzaLfsUUi5pGmhrASEpXF52deCDuByeKbU7SuZ9toEi"
+        },
+        "originalSchemaVersion": "2.0.0",
+        "image": { "urlTemplate": "{infix}" },
+        "collectionId": 3604
+      },
+      "knownSchema": "ERC721Metadata",
+      "flags": { "foreign": false, "erc721metadata": true },
+      "tokenPropertyPermissions": [
+        {
+          "key": "URI",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        },
+        {
+          "key": "URISuffix",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        },
+        {
+          "key": "customizing_overrides",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        },
+        {
+          "key": "overrides",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        },
+        {
+          "key": "royalties",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        },
+        {
+          "key": "schemaName",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        },
+        {
+          "key": "schemaVersion",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        },
+        {
+          "key": "tokenData",
+          "permission": {
+            "mutable": true,
+            "tokenOwner": false,
+            "collectionAdmin": true
+          }
+        }
+      ]
+    },
+    "decodingError": null
+  }
+}
