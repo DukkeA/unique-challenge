@@ -31,6 +31,7 @@ export default function ExplorerPage() {
   const [decryptedAttributes, setDecryptedAttributes] = useState<{
     [key: string]: any;
   }>({});
+  const [isDecrypted, setIsDecrypted] = useState(false);
 
   useEffect(() => {
     if (accountsArray.length === 0) {
@@ -45,14 +46,23 @@ export default function ExplorerPage() {
   }, [sdk]);
 
   useEffect(() => {
-    if (nft && currentAccount) {
-      verifyOwnershipAndDecrypt();
+    if (nft) {
+      const tokenData = JSON.parse(nft.properties[2].value);
+      const attributes: { [key: string]: any } = {};
+      tokenData.attributes.forEach(
+        (attr: { trait_type: string; value: any }) => {
+          attributes[attr.trait_type] = attr.value;
+        }
+      );
+      setDecryptedAttributes(attributes);
+      setIsDecrypted(false);
     }
-  }, [nft, currentAccount]);
+  }, [currentAccount, nft]);
 
   async function fetchNFT() {
     try {
       setError(null);
+      setIsLoading(true);
       const token = await sdk?.token?.get({
         collectionId: collection,
         tokenId: parseInt(tokenId),
@@ -61,6 +71,14 @@ export default function ExplorerPage() {
       if (token) {
         setNft(token);
         setSearchPerformed(true);
+        const tokenData = JSON.parse(token.properties[2].value);
+        const attributes: { [key: string]: any } = {};
+        tokenData.attributes.forEach(
+          (attr: { trait_type: string; value: any }) => {
+            attributes[attr.trait_type] = attr.value;
+          }
+        );
+        setDecryptedAttributes(attributes);
       } else {
         setError("Token not found.");
         setNft(null);
@@ -70,6 +88,8 @@ export default function ExplorerPage() {
       setError("Token not found.");
       setNft(null);
       setDecryptedAttributes({});
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -122,7 +142,7 @@ export default function ExplorerPage() {
     }
   };
 
-  const verifyOwnershipAndDecrypt = async () => {
+  const handleDecrypt = async () => {
     if (!currentAccount || !nft) return;
 
     setIsLoading(true);
@@ -143,36 +163,30 @@ export default function ExplorerPage() {
         (attr: { trait_type: string; value: any }) => {
           if (attr.trait_type === "Nickname") {
             const encryptedBytes = hexToU8a(attr.value);
-
-            // Ajuste para desencriptar correctamente
             const decryptedBytes = encryptedBytes.slice(
               0,
               -encryptionKey.length
             );
             const decryptedValue = u8aToString(decryptedBytes);
-
-            newDecryptedAttributes[attr.trait_type] =
-              currentAccount.address === nft.owner
-                ? decryptedValue
-                : attr.value + " I'm encrypted 😵";
+            newDecryptedAttributes[attr.trait_type] = decryptedValue;
           } else {
             newDecryptedAttributes[attr.trait_type] = attr.value;
           }
         }
       );
 
-      console.log("Signature (hex):", signature);
-      console.log("Encryption key:", encryptionKey);
-
       setDecryptedAttributes(newDecryptedAttributes);
+      setIsDecrypted(true);
     } catch (error) {
-      console.error("Error verifying ownership:", error);
+      console.error("Error decrypting:", error);
       setError("An error occurred during decryption.");
-      setDecryptedAttributes({});
     } finally {
       setIsLoading(false);
     }
   };
+
+  console.log("nft", nft);
+  console.log("nft?.image?.url", nft?.image?.url);
 
   return (
     <div className="min-h-screen bg-background">
@@ -240,32 +254,102 @@ export default function ExplorerPage() {
 
         {searchPerformed && (
           <div className="mt-6">
-            <h2 className="text-xl font-semibold mb-4">Search Results</h2>
             {isLoading ? (
-              <p className="text-muted-foreground">Loading...</p>
+              <Card>
+                <CardContent className="p-6 flex justify-center items-center">
+                  <p className="text-muted-foreground">Loading...</p>
+                </CardContent>
+              </Card>
             ) : error ? (
-              <p className="text-red-500">{error}</p>
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-red-500">{error}</p>
+                </CardContent>
+              </Card>
             ) : nft ? (
               <Card>
                 <CardContent className="p-6">
-                  <p className="text-muted-foreground">
-                    <div>Owner: {nft.owner}</div>
-                    <div>Collection: {nft.collectionId}</div>
-                    <div>Token: {nft.tokenId}</div>
-                    {Object.entries(decryptedAttributes).map(
-                      ([trait_type, value]) => (
-                        <div key={trait_type}>
-                          {trait_type}: {value}
+                  <div className="flex flex-col md:flex-row gap-8">
+                    <div className="w-full md:w-1/2">
+                      <img
+                        src={
+                          nft?.image?.url ||
+                          "/placeholder.svg?height=400&width=400"
+                        }
+                        alt={`CAR #${nft?.tokenId}`}
+                        className="w-full h-auto rounded-lg shadow-lg object-cover aspect-square"
+                      />
+                    </div>
+                    <div className="w-full md:w-1/2 space-y-6">
+                      <h2 className="text-3xl font-bold">
+                        CAR #{nft?.tokenId}
+                      </h2>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">Collection</span>
+                          <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                            <img
+                              src={
+                                nft?.collection?.image?.url ||
+                                "/placeholder.svg?height=24&width=24"
+                              }
+                              alt={nft?.collection?.name || "Collection icon"}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                            <span className="text-blue-600 font-medium">
+                              {nft?.collection?.name || "Unknown Collection"}
+                            </span>
+                            <span className="text-gray-500 text-sm">
+                              ID {nft.collectionId}
+                            </span>
+                          </div>
                         </div>
-                      )
-                    )}
-                  </p>
+                        <div>
+                          <span className="text-xl font-semibold mb-2">Owner</span>
+                          <div className="mt-1 bg-gray-100 p-2 rounded-lg">
+                            <span className="font-mono text-sm break-all">
+                              {nft.owner}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-semibold mb-2">
+                            Attributes
+                          </h3>
+                          <div className="space-y-2">
+                            {Object.entries(decryptedAttributes).map(
+                              ([trait_type, value]) => (
+                                <div
+                                  key={trait_type}
+                                  className="bg-gray-100 p-3 rounded-lg flex break-all text-center justify-center"
+                                >
+                                  {" "}
+                                  {trait_type}: {value}{" "}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                        {nft.owner === currentAccount?.address && (
+                          <Button
+                            onClick={handleDecrypt}
+                            disabled={isDecrypted || !currentAccount}
+                            className="w-full mt-4"
+                          >
+                            {isDecrypted ? "Decrypted" : "Decrypt"}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ) : (
-              <p className="text-muted-foreground">
-                Please select an account to view results.
-              </p>
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground">No results found.</p>
+                </CardContent>
+              </Card>
             )}
           </div>
         )}
