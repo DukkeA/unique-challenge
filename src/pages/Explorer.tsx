@@ -13,7 +13,8 @@ import {
 import { Search } from "lucide-react";
 import { AccountsContext } from "../accounts/AccountsContext";
 import { SdkContext } from "../sdk/SdkContext";
-import CryptoJS from "crypto-js";
+import { u8aToHex, stringToU8a, hexToU8a, u8aToString } from "@polkadot/util";
+import { web3Enable, web3FromAddress } from "@polkadot/extension-dapp";
 import { Account } from "../accounts/types";
 
 export default function ExplorerPage() {
@@ -41,7 +42,7 @@ export default function ExplorerPage() {
     if (sdk && collection && tokenId) {
       fetchNFT();
     }
-  }, [sdk, collection, tokenId]);
+  }, [sdk]);
 
   useEffect(() => {
     if (nft && currentAccount) {
@@ -92,32 +93,76 @@ export default function ExplorerPage() {
     setCurrentAccount(selectedAccount);
   };
 
-  const verifyOwnershipAndDecrypt = () => {
+  const signMessage = async (message: string) => {
+    if (!currentAccount) return null;
+
+    try {
+      await web3Enable("my dapp");
+      const injector = await web3FromAddress(currentAccount.address);
+
+      const signRaw = injector?.signer?.signRaw;
+
+      if (!signRaw) {
+        setError("Signer not found for the selected account.");
+        return null;
+      }
+
+      const { signature } = await signRaw({
+        address: currentAccount.address,
+        data: u8aToHex(stringToU8a(message)),
+        type: "bytes",
+      });
+
+      console.log("Frontend - Signature:", signature);
+      return signature;
+    } catch (error) {
+      console.error("Error signing message:", error);
+      setError("Failed to sign message.");
+      return null;
+    }
+  };
+
+  const verifyOwnershipAndDecrypt = async () => {
     if (!currentAccount || !nft) return;
 
     setIsLoading(true);
 
     try {
-      const address = currentAccount.address;
-      const encryptionKey = CryptoJS.SHA256(address).toString();
+      const signature = await signMessage("Authorize decryption");
+      if (!signature) {
+        setError("Signature is required for decryption.");
+        setIsLoading(false);
+        return;
+      }
 
+      const encryptionKey = hexToU8a(signature);
       const tokenData = JSON.parse(nft.properties[2].value);
       const newDecryptedAttributes: { [key: string]: any } = {};
 
       tokenData.attributes.forEach(
         (attr: { trait_type: string; value: any }) => {
           if (attr.trait_type === "Nickname") {
+            const encryptedBytes = hexToU8a(attr.value);
+
+            // Ajuste para desencriptar correctamente
+            const decryptedBytes = encryptedBytes.slice(
+              0,
+              -encryptionKey.length
+            );
+            const decryptedValue = u8aToString(decryptedBytes);
+
             newDecryptedAttributes[attr.trait_type] =
-              address === nft.owner
-                ? CryptoJS.AES.decrypt(attr.value, encryptionKey).toString(
-                    CryptoJS.enc.Utf8
-                  )
+              currentAccount.address === nft.owner
+                ? decryptedValue
                 : attr.value + " I'm encrypted 😵";
           } else {
             newDecryptedAttributes[attr.trait_type] = attr.value;
           }
         }
       );
+
+      console.log("Signature (hex):", signature);
+      console.log("Encryption key:", encryptionKey);
 
       setDecryptedAttributes(newDecryptedAttributes);
     } catch (error) {
